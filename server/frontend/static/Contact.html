@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+  <div class="contact-section" style="width: 80%; margin: auto; padding-top: 20px;">
+    <h1>Contact Us</h1>
+    <p>We’d love to hear from you! Reach out to us with any questions or concerns.</p>
+
+    <!-- Contact person image -->
+    <img src="{% static 'contactus.png' %}" alt="Contact Person" style="width: 150px; height: 150px; margin: 20px;">
+
+    <!-- Contact details -->
+    <div class="contact-info">
+      <h2>Contact Information</h2>
+      <address>
+        Best Cars Dealership<br>
+        1234 Main St, Springfield, USA<br>
+        Phone: (555) 555-5555<br>
+        Email: <a href="mailto:info@dealership.com">info@dealership.com</a>
+      </address>
+    </div>
+  </div>
+{% endblock %}
