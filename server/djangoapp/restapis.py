@@ -1,5 +1,5 @@
 # Uncomment the imports below before you add the function code
-# import requests
+import requests
 import os
 from dotenv import load_dotenv
 
@@ -12,22 +12,35 @@ sentiment_analyzer_url = os.getenv(
     default="http://localhost:5050/")
 
 # def get_request(endpoint, **kwargs):
+import requests
+
 def get_request(endpoint, **kwargs):
     params = ""
-    if(kwargs):
-        for key,value in kwargs.items():
-            params=params+key+"="+value+"&"
-
-    request_url = backend_url+endpoint+"?"+params
-
-    print("GET from {} ".format(request_url))
+    if kwargs:
+        for key, value in kwargs.items():
+            params += f"{key}={value}&"
+    
+    request_url = backend_url + endpoint + "?" + params.rstrip("&")  # Remove trailing '&'
+    
+    print(f"GET from {request_url}")
+    
     try:
-        # Call get method of requests library with URL and parameters
         response = requests.get(request_url)
+        response.raise_for_status()  # Raise an error for bad responses (4xx and 5xx)
         return response.json()
-    except:
-        # If any error occurs
-        print("Network exception occurred")
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")  # Print HTTP error
+    except requests.exceptions.ConnectionError as conn_err:
+        print(f"Connection error occurred: {conn_err}")  # Print connection error
+    except requests.exceptions.Timeout as timeout_err:
+        print(f"Timeout error occurred: {timeout_err}")  # Print timeout error
+    except requests.exceptions.RequestException as req_err:
+        print(f"Request exception occurred: {req_err}")  # Print any other request error
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")  # Print unexpected error
+    
+    return None  # Return None if there was an error
+
 # def analyze_review_sentiments(text):
 # request_url = sentiment_analyzer_url+"analyze/"+text
 def analyze_review_sentiments(text):

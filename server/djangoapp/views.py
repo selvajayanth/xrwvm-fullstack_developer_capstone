@@ -95,7 +95,7 @@ def get_dealerships(request, state="All"):
     if(state == "All"):
         endpoint = "/fetchDealers"
     else:
-        endpoint = "/fetchDealers/"+state
+        endpoint = f"/fetchDealers/{state}"
     dealerships = get_request(endpoint)
     return JsonResponse({"status":200,"dealers":dealerships})
 
@@ -106,24 +106,35 @@ def get_dealerships(request, state="All"):
 # Create a `get_dealer_details` view to render the dealer details
 def get_dealer_details(request, dealer_id):
     if(dealer_id):
-        endpoint = "/fetchDealer/"+str(dealer_id)
+        endpoint = f"/fetchDealer/{dealer_id}"
         dealership = get_request(endpoint)
         return JsonResponse({"status":200,"dealer":dealership})
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})
 # Create a `add_review` view to submit a review
 def get_dealer_reviews(request, dealer_id):
-    # if dealer id has been provided
-    if(dealer_id):
-        endpoint = "/fetchReviews/dealer/"+str(dealer_id)
-        reviews = get_request(endpoint)
-        for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail['review'])
-            print(response)
-            review_detail['sentiment'] = response['sentiment']
-        return JsonResponse({"status":200,"reviews":reviews})
+    if dealer_id:
+        endpoint = f"/fetchReviews/dealer/{dealer_id}"
+        review_details = get_request(endpoint)
+
+        print("Raw review details received:", review_details)
+
+        if isinstance(review_details, list):
+            sentiments = []
+            for review_detail in review_details:
+                print("Review Detail:", review_detail)
+
+                if isinstance(review_detail, dict) and 'review' in review_detail:
+                    response = analyze_review_sentiments(review_detail['review'])
+                    sentiments.append(response)
+                else:
+                    print(f"Unexpected review structure: {review_detail}")
+            return JsonResponse({"status": 200, "reviews": sentiments})
+        else:
+            return JsonResponse({"status": 400, "message": "No reviews found or unexpected data format"})
     else:
-        return JsonResponse({"status":400,"message":"Bad Request"})
+        return JsonResponse({"status": 400, "message": "Bad Request"})
+
 
 def add_review(request):
     if(request.user.is_anonymous == False):

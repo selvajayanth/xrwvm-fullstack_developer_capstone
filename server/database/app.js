@@ -83,16 +83,20 @@ app.get('/fetchDealers/:state', async (req, res) => {
 
 // Express route to fetch dealer by a particular id
 app.get('/fetchDealer/:id', async (req, res) => {
+    console.log('selva');
     try {
-      const dealer = await Dealerships.findById(req.params.id); // Find a dealership by its unique ID
-      if (!dealer) {
-        return res.status(404).json({ message: 'Dealer not found' }); // Handle no dealer found
-      }
-      res.json(dealer); // Send the found dealer as a JSON response
+        const dealerId = parseInt(req.params.id); // Convert ID to integer
+        const dealer = await Dealerships.findOne({ id: dealerId }); // Find dealership by custom ID field
+        if (!dealer) {
+            return res.status(404).json({ message: 'Dealer not found' }); // Handle no dealer found
+        }
+        res.json(dealer); // Send the found dealer as a JSON response
     } catch (error) {
-      res.status(500).json({ error: 'Error fetching dealership by ID' }); // Handle errors
+        console.error("Error fetching dealership:", error);
+        res.status(500).json({ error: 'Error fetching dealership by ID' }); // Handle errors
     }
 });
+
   
 
 //Express route to insert review
