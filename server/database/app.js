@@ -48,13 +48,28 @@ app.get('/fetchReviews', async (req, res) => {
 
 // Express route to fetch reviews by a particular dealer
 app.get('/fetchReviews/dealer/:id', async (req, res) => {
-  try {
-    const documents = await Reviews.find({dealership: req.params.id});
-    res.json(documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Error fetching documents' });
-  }
+    try {
+        const dealerId = parseInt(req.params.id);
+        const documents = await Reviews.find({ dealership: dealerId });
+
+        // Map the documents to a cleaner format
+        const reviews = documents.map(doc => ({
+            id: doc.id,
+            name: doc.name,
+            review: doc.review,
+            car_make: doc.car_make,
+            car_model: doc.car_model,
+            car_year: doc.car_year,
+            sentiment: "neutral" // You might want to calculate or fetch this
+        }));
+
+        console.log(reviews); // Log cleaned reviews for debugging
+        res.json({ status: 200, reviews });
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching documents' });
+    }
 });
+
 
 // Express route to fetch all dealerships
 app.get('/fetchDealers', async (req, res) => {
@@ -86,7 +101,7 @@ app.get('/fetchDealer/:id', async (req, res) => {
     console.log('selva');
     try {
         const dealerId = parseInt(req.params.id); // Convert ID to integer
-        const dealer = await Dealerships.findOne({ id: dealerId }); // Find dealership by custom ID field
+        const dealer = await Dealerships.find({ id: dealerId }); // Find dealership by custom ID field
         if (!dealer) {
             return res.status(404).json({ message: 'Dealer not found' }); // Handle no dealer found
         }

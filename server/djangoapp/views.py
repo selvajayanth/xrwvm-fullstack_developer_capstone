@@ -119,17 +119,28 @@ def get_dealer_reviews(request, dealer_id):
 
         print("Raw review details received:", review_details)
 
-        if isinstance(review_details, list):
-            sentiments = []
-            for review_detail in review_details:
-                print("Review Detail:", review_detail)
-
-                if isinstance(review_detail, dict) and 'review' in review_detail:
-                    response = analyze_review_sentiments(review_detail['review'])
-                    sentiments.append(response)
-                else:
-                    print(f"Unexpected review structure: {review_detail}")
-            return JsonResponse({"status": 200, "reviews": sentiments})
+        # Check if review_details has the correct structure
+        if review_details and isinstance(review_details, dict) and "status" in review_details:
+            if review_details["status"] == 200:
+                reviews = review_details.get("reviews", [])
+                sentiments = []
+                for review_detail in reviews:
+                    print("Review Detail:", review_detail)
+                    if 'review' in review_detail:
+                        response = analyze_review_sentiments(review_detail['review'])
+                        sentiments.append({
+                            "review": review_detail['review'],
+                            "sentiment": response.get("sentiment"),  # Assuming this is how you get sentiment
+                            "name": review_detail.get("name"),
+                            "car_make": review_detail.get("car_make"),
+                            "car_model": review_detail.get("car_model"),
+                            "car_year": review_detail.get("car_year")
+                        })
+                    else:
+                        print(f"Unexpected review structure: {review_detail}")
+                return JsonResponse({"status": 200, "reviews": sentiments})
+            else:
+                return JsonResponse({"status": 400, "message": "No reviews found or unexpected data format"})
         else:
             return JsonResponse({"status": 400, "message": "No reviews found or unexpected data format"})
     else:
