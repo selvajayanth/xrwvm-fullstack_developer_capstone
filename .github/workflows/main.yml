@@ -18,7 +18,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.10  # Corrected Python version
+        python-version: 3.10  # Updated to a valid Python version
 
     - name: Install dependencies
       run: |
@@ -30,7 +30,7 @@ jobs:
 
     - name: Run Linter
       run: |
-        find . -name "*.py" -exec flake8 --exit-zero {} +  # Ensure it doesn't fail on warnings
+        find . -name "*.py" -exec flake8 --exit-zero {} +  # --exit-zero to prevent failure on warnings
         echo "Linted all Python files successfully"
 
   lint_js:
@@ -44,7 +44,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 20  # Updated Node.js version to match future changes
+        node-version: 20  # Updated to Node.js 20
 
     - name: Install JSHint
       run: npm install jshint --global
