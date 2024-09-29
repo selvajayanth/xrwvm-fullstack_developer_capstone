@@ -18,7 +18,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.10  # More stable version
+        python-version: 3.10  # Corrected Python version
 
     - name: Install dependencies
       run: |
@@ -44,7 +44,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16  # Updated Node.js version
+        node-version: 20  # Updated Node.js version to match future changes
 
     - name: Install JSHint
       run: npm install jshint --global
